@@ -1,0 +1,59 @@
+# Finding 05 – Email Leak / JSONP Cross-Origin Information Disclosure
+
+Application:
+OWASP Juice Shop
+
+Target:
+Local OWASP Juice Shop (localhost:3000)
+
+Tool Used:
+Web Browser
+
+Vulnerability Category:
+Sensitive Data Exposure / Cross-Origin Information Disclosure
+
+Description:
+During testing, the user-information endpoint was found to support
+JSONP through a callback parameter. This allowed user information to
+be returned as executable JavaScript and consumed by a separate local
+web page.
+
+Testing:
+The following local endpoint was accessed:
+
+/rest/user/whoami?callback=test
+
+The server returned a JSONP response containing the current user's
+information.
+
+A separate test page running on localhost:3001 loaded the endpoint
+using a script element and successfully received the user information.
+
+Result:
+The separate local page displayed the user information returned by
+the Juice Shop endpoint, including the user's email address.
+
+Security Impact:
+If sensitive user information is exposed through JSONP, a
+cross-origin page may be able to consume information that should not
+be made available through a cross-origin script interface.
+
+Severity:
+Medium
+
+Severity Reasoning:
+The endpoint exposes user information through an outdated
+cross-origin data-sharing mechanism. The demonstrated response
+contains an email address, which is sensitive application data.
+The observed impact is information disclosure rather than direct
+modification of application data.
+
+Recommendation:
+Remove JSONP support from sensitive endpoints. Use modern
+cross-origin controls such as appropriately configured CORS where
+cross-origin access is genuinely required. Return only the minimum
+necessary user information and require appropriate authentication
+and authorization controls.
+
+Evidence:
+Screenshot: 05-email-leak.png
